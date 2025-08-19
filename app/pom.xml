@@ -15,8 +15,8 @@
     <groupId>com.example</groupId>
     <artifactId>spring-refactor-debug-30days</artifactId>
     <version>1.0.0</version>
-    <name>Spring Boot Refactoring & Debugging - 30 Days Challenge</name>
-    <description>30 días de ejercicios prácticos de refactoring y debugging en Spring Boot</description>
+    <name>Spring Boot Refactoring and Debugging Lab</name>
+    <description>30 days of practical refactoring and debugging exercises in Spring Boot</description>
 
     <properties>
         <java.version>17</java.version>
@@ -159,6 +159,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
+            <version>2.35.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

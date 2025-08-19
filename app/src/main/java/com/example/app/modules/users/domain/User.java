@@ -1,6 +1,7 @@
 package com.example.app.modules.users.domain;
 
 import com.example.app.shared.domain.Entity;
+import com.example.app.shared.domain.DomainEvent;
 import com.example.app.modules.users.domain.events.UserRegisteredEvent;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,13 +28,17 @@ public class User extends Entity<UserId> {
         super(null);
     }
 
+    // Constructor for creating new users
+    private User(UserId id) {
+        super(id);
+    }
+
     /**
      * Factory method to create a new user.
      * This ensures all business rules are applied during creation.
      */
     public static User create(Email email, String name, String passwordHash) {
-        User user = new User();
-        user.id = UserId.generate();
+        User user = new User(UserId.generate());
         user.email = email;
         user.name = name;
         user.passwordHash = passwordHash;
