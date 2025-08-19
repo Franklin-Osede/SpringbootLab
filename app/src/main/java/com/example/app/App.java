@@ -11,7 +11,8 @@ import org.springframework.retry.annotation.EnableRetry;
  * <p>Esta aplicación sirve como base para todos los ejercicios diarios, implementando arquitectura
  * DDD con Spring Boot.
  */
-@SpringBootApplication
+@SpringBootApplication(
+    scanBasePackages = {"com.example.app.after", "com.example.app.shared", "com.example.app.debug"})
 @EnableCaching
 @EnableRetry
 public class App {
