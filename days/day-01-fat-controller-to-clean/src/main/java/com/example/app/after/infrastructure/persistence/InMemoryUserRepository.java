@@ -1,7 +1,6 @@
 package com.example.app.after.infrastructure.persistence;
 
 import com.example.app.after.domain.User;
-import com.example.app.after.domain.UserStatus;
 import com.example.app.after.domain.valueobjects.UserId;
 import org.springframework.stereotype.Repository;
 

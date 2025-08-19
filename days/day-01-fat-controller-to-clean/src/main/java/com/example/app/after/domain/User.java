@@ -153,7 +153,6 @@ public class User extends Entity<UserId> {
             throw new IllegalStateException("Cannot activate deleted user");
         }
         
-        UserStatus oldStatus = this.status;
         this.status = UserStatus.ACTIVE;
         this.updatedAt = LocalDateTime.now();
         
@@ -173,7 +172,6 @@ public class User extends Entity<UserId> {
             throw new IllegalStateException("Cannot deactivate deleted user");
         }
         
-        UserStatus oldStatus = this.status;
         this.status = UserStatus.INACTIVE;
         this.updatedAt = LocalDateTime.now();
         
@@ -189,7 +187,6 @@ public class User extends Entity<UserId> {
             throw new IllegalStateException("User is already deleted");
         }
         
-        UserStatus oldStatus = this.status;
         this.status = UserStatus.DELETED;
         this.updatedAt = LocalDateTime.now();
         
