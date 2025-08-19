@@ -8,30 +8,30 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * ❌ REPOSITORIO SIMPLE - ANTES DEL REFACTORING
+ * ❌ SIMPLE REPOSITORY - BEFORE REFACTORING
  * 
- * PROBLEMAS IDENTIFICADOS:
- * - Almacenamiento en memoria (no persistente)
- * - Sin transacciones
- * - Sin validaciones de integridad
- * - Consultas manuales sin optimización
- * - Sin manejo de concurrencia
- * - Acoplamiento directo con la lógica de negocio
+ * IDENTIFIED PROBLEMS:
+ * - In-memory storage (not persistent)
+ * - No transactions
+ * - No integrity validations
+ * - Manual queries without optimization
+ * - No concurrency management
+ * - Direct coupling with business logic
  */
 @Repository
 public class UserRepository {
 
-    // ❌ PROBLEMA: Almacenamiento en memoria (se pierde al reiniciar)
+    // ❌ PROBLEM: In-memory storage (lost on restart)
     private final Map<String, Map<String, Object>> users = new ConcurrentHashMap<>();
 
     /**
-     * ❌ PROBLEMA: Método sin validaciones de integridad
+     * ❌ PROBLEM: Method without integrity validations
      */
     public Map<String, Object> save(Map<String, Object> user) {
         try {
             String id = user.get("id").toString();
             
-            // ❌ PROBLEMA: Sin validaciones de integridad
+            // ❌ PROBLEM: No integrity validations
             users.put(id, new HashMap<>(user));
             
             return users.get(id);
@@ -42,11 +42,11 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método sin optimización de consulta
+     * ❌ PROBLEM: Method without query optimization
      */
     public Map<String, Object> findById(String id) {
         try {
-            // ❌ PROBLEMA: Consulta manual sin optimización
+            // ❌ PROBLEM: Manual query without optimization
             return users.get(id);
             
         } catch (Exception e) {
@@ -55,11 +55,11 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método con consulta manual ineficiente
+     * ❌ PROBLEM: Method with inefficient manual query
      */
     public List<Map<String, Object>> findByEmail(String email) {
         try {
-            // ❌ PROBLEMA: Consulta manual sin índice
+            // ❌ PROBLEM: Manual query without index
             return users.values().stream()
                     .filter(user -> email.equals(user.get("email")))
                     .collect(Collectors.toList());
@@ -70,14 +70,14 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método con paginación manual ineficiente
+     * ❌ PROBLEM: Method with inefficient manual pagination
      */
     public List<Map<String, Object>> findAll(Map<String, Object> filters, int page, int size) {
         try {
-            // ❌ PROBLEMA: Filtrado manual sin optimización
+            // ❌ PROBLEM: Manual filtering without optimization
             List<Map<String, Object>> filteredUsers = users.values().stream()
                     .filter(user -> {
-                        // ❌ PROBLEMA: Filtrado manual por status
+                        // ❌ PROBLEM: Manual filtering by status
                         if (filters.containsKey("status")) {
                             String filterStatus = filters.get("status").toString();
                             String userStatus = user.get("status").toString();
@@ -86,7 +86,7 @@ public class UserRepository {
                             }
                         }
                         
-                        // ❌ PROBLEMA: Filtrado manual por búsqueda
+                        // ❌ PROBLEM: Manual filtering by search
                         if (filters.containsKey("search")) {
                             String searchTerm = filters.get("search").toString().toLowerCase();
                             String userName = user.get("name").toString().toLowerCase();
@@ -101,7 +101,7 @@ public class UserRepository {
                     })
                     .collect(Collectors.toList());
 
-            // ❌ PROBLEMA: Paginación manual
+            // ❌ PROBLEM: Manual pagination
             int startIndex = page * size;
             int endIndex = Math.min(startIndex + size, filteredUsers.size());
             
@@ -117,11 +117,11 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método sin transacciones
+     * ❌ PROBLEM: Method without transactions
      */
     public boolean delete(String id) {
         try {
-            // ❌ PROBLEMA: Sin transacciones
+            // ❌ PROBLEM: No transactions
             return users.remove(id) != null;
             
         } catch (Exception e) {
@@ -130,11 +130,11 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método con conteo manual ineficiente
+     * ❌ PROBLEM: Method with inefficient manual count
      */
     public long count() {
         try {
-            // ❌ PROBLEMA: Conteo manual sin optimización
+            // ❌ PROBLEM: Manual count without optimization
             return users.size();
             
         } catch (Exception e) {
@@ -143,11 +143,11 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método con búsqueda manual ineficiente
+     * ❌ PROBLEM: Method with inefficient manual search
      */
     public List<Map<String, Object>> findByStatus(String status) {
         try {
-            // ❌ PROBLEMA: Búsqueda manual sin índice
+            // ❌ PROBLEM: Manual search without index
             return users.values().stream()
                     .filter(user -> status.equals(user.get("status")))
                     .collect(Collectors.toList());
@@ -158,11 +158,11 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método con búsqueda manual ineficiente
+     * ❌ PROBLEM: Method with inefficient manual search
      */
     public List<Map<String, Object>> findByNameContaining(String name) {
         try {
-            // ❌ PROBLEMA: Búsqueda manual sin índice
+            // ❌ PROBLEM: Manual search without index
             return users.values().stream()
                     .filter(user -> {
                         String userName = user.get("name").toString().toLowerCase();
@@ -176,7 +176,7 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método con actualización manual sin validaciones
+     * ❌ PROBLEM: Method with manual update without validations
      */
     public Map<String, Object> update(String id, Map<String, Object> updates) {
         try {
@@ -185,7 +185,7 @@ public class UserRepository {
                 return null;
             }
 
-            // ❌ PROBLEMA: Actualización manual sin validaciones
+            // ❌ PROBLEM: Manual update without validations
             Map<String, Object> updatedUser = new HashMap<>(existingUser);
             updatedUser.putAll(updates);
             updatedUser.put("updated_at", LocalDateTime.now());
@@ -200,11 +200,11 @@ public class UserRepository {
     }
 
     /**
-     * ❌ PROBLEMA: Método con limpieza manual sin transacciones
+     * ❌ PROBLEM: Method with manual cleanup without transactions
      */
     public void deleteAll() {
         try {
-            // ❌ PROBLEMA: Sin transacciones
+            // ❌ PROBLEM: No transactions
             users.clear();
             
         } catch (Exception e) {

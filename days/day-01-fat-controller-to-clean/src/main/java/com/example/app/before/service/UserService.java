@@ -8,16 +8,16 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * ❌ SERVICIO "GORDO" - ANTES DEL REFACTORING
+ * ❌ "FAT" SERVICE - BEFORE REFACTORING
  * 
- * PROBLEMAS IDENTIFICADOS:
- * - Más de 300 líneas de código
- * - Lógica de negocio mezclada con acceso a datos
- * - Validaciones duplicadas
- * - Manejo de errores inconsistente
- * - Acoplamiento directo con la base de datos
- * - Métodos con múltiples responsabilidades
- * - No sigue principios SOLID
+ * IDENTIFIED PROBLEMS:
+ * - More than 300 lines of code
+ * - Business logic mixed with data access
+ * - Duplicated validations
+ * - Inconsistent error handling
+ * - Direct coupling with database
+ * - Methods with multiple responsibilities
+ * - Does not follow SOLID principles
  */
 @Service
 public class UserService {
@@ -26,47 +26,47 @@ public class UserService {
     private UserRepository userRepository;
 
     /**
-     * ❌ PROBLEMA: Método con múltiples responsabilidades
-     * - Validación de datos
-     * - Lógica de negocio
-     * - Transformación de datos
-     * - Acceso a base de datos
+     * ❌ PROBLEM: Method with multiple responsibilities
+     * - Data validation
+     * - Business logic
+     * - Data transformation
+     * - Database access
      */
     public Map<String, Object> createUser(Map<String, Object> userData) {
         try {
-            // ❌ PROBLEMA: Validación duplicada (ya se hizo en el controlador)
+            // ❌ PROBLEM: Duplicated validation (already done in controller)
             String email = userData.get("email").toString();
             String name = userData.get("name").toString();
             String password = userData.get("password").toString();
 
-            // ❌ PROBLEMA: Validación de email duplicada
+            // ❌ PROBLEM: Duplicated email validation
             if (!email.contains("@") || !email.contains(".")) {
                 throw new RuntimeException("Invalid email format");
             }
 
-            // ❌ PROBLEMA: Validación de password duplicada
+            // ❌ PROBLEM: Duplicated password validation
             if (password.length() < 6) {
                 throw new RuntimeException("Password must be at least 6 characters");
             }
 
-            // ❌ PROBLEMA: Validación de nombre duplicada
+            // ❌ PROBLEM: Duplicated name validation
             if (name.length() < 2) {
                 throw new RuntimeException("Name must be at least 2 characters");
             }
 
-            // ❌ PROBLEMA: Verificación de email único (lógica de negocio)
+            // ❌ PROBLEM: Unique email verification (business logic)
             List<Map<String, Object>> existingUsers = userRepository.findByEmail(email);
             if (!existingUsers.isEmpty()) {
                 throw new RuntimeException("Email already exists");
             }
 
-            // ❌ PROBLEMA: Generación manual de ID
+            // ❌ PROBLEM: Manual ID generation
             String userId = UUID.randomUUID().toString();
 
-            // ❌ PROBLEMA: Hash manual de password (sin salt)
+            // ❌ PROBLEM: Manual password hash (without salt)
             String hashedPassword = password.hashCode() + "";
 
-            // ❌ PROBLEMA: Construcción manual de datos
+            // ❌ PROBLEM: Manual data construction
             Map<String, Object> userToSave = new HashMap<>();
             userToSave.put("id", userId);
             userToSave.put("email", email);
@@ -76,10 +76,10 @@ public class UserService {
             userToSave.put("created_at", LocalDateTime.now());
             userToSave.put("updated_at", LocalDateTime.now());
 
-            // ❌ PROBLEMA: Llamada directa al repositorio
+            // ❌ PROBLEM: Direct repository call
             Map<String, Object> savedUser = userRepository.save(userToSave);
 
-            // ❌ PROBLEMA: Transformación manual de respuesta
+            // ❌ PROBLEM: Manual response transformation
             Map<String, Object> response = new HashMap<>();
             response.put("id", savedUser.get("id"));
             response.put("email", savedUser.get("email"));
@@ -91,32 +91,32 @@ public class UserService {
             return response;
 
         } catch (Exception e) {
-            // ❌ PROBLEMA: Manejo genérico de errores
+            // ❌ PROBLEM: Generic error handling
             throw new RuntimeException("Error creating user: " + e.getMessage());
         }
     }
 
     /**
-     * ❌ PROBLEMA: Método con lógica de negocio mezclada
+     * ❌ PROBLEM: Method with mixed business logic
      */
     public Map<String, Object> updateUser(Map<String, Object> updateData) {
         try {
             String userId = updateData.get("id").toString();
 
-            // ❌ PROBLEMA: Verificación manual de existencia
+            // ❌ PROBLEM: Manual existence verification
             Map<String, Object> existingUser = userRepository.findById(userId);
             if (existingUser == null) {
                 return null;
             }
 
-            // ❌ PROBLEMA: Validación de email si se proporciona
+            // ❌ PROBLEM: Email validation if provided
             if (updateData.containsKey("email")) {
                 String email = updateData.get("email").toString();
                 if (!email.contains("@") || !email.contains(".")) {
                     throw new RuntimeException("Invalid email format");
                 }
 
-                // ❌ PROBLEMA: Verificación de email único
+                // ❌ PROBLEM: Unique email verification
                 List<Map<String, Object>> usersWithEmail = userRepository.findByEmail(email);
                 for (Map<String, Object> user : usersWithEmail) {
                     if (!user.get("id").equals(userId)) {
@@ -125,7 +125,7 @@ public class UserService {
                 }
             }
 
-            // ❌ PROBLEMA: Validación de nombre si se proporciona
+            // ❌ PROBLEM: Name validation if provided
             if (updateData.containsKey("name")) {
                 String name = updateData.get("name").toString();
                 if (name.length() < 2) {
@@ -133,7 +133,7 @@ public class UserService {
                 }
             }
 
-            // ❌ PROBLEMA: Validación de status si se proporciona
+            // ❌ PROBLEM: Status validation if provided
             if (updateData.containsKey("status")) {
                 String status = updateData.get("status").toString();
                 if (!Arrays.asList("ACTIVE", "INACTIVE", "SUSPENDED", "DELETED").contains(status)) {
@@ -141,7 +141,7 @@ public class UserService {
                 }
             }
 
-            // ❌ PROBLEMA: Construcción manual de datos actualizados
+            // ❌ PROBLEM: Manual data construction actualizados
             Map<String, Object> userToUpdate = new HashMap<>(existingUser);
             for (Map.Entry<String, Object> entry : updateData.entrySet()) {
                 if (!entry.getKey().equals("id")) {
@@ -150,10 +150,10 @@ public class UserService {
             }
             userToUpdate.put("updated_at", LocalDateTime.now());
 
-            // ❌ PROBLEMA: Llamada directa al repositorio
+            // ❌ PROBLEM: Direct repository call
             Map<String, Object> updatedUser = userRepository.save(userToUpdate);
 
-            // ❌ PROBLEMA: Transformación manual de respuesta
+            // ❌ PROBLEM: Manual response transformation
             Map<String, Object> response = new HashMap<>();
             response.put("id", updatedUser.get("id"));
             response.put("email", updatedUser.get("email"));
@@ -170,18 +170,18 @@ public class UserService {
     }
 
     /**
-     * ❌ PROBLEMA: Método con transformación manual
+     * ❌ PROBLEM: Method with manual transformation
      */
     public Map<String, Object> getUserById(String id) {
         try {
-            // ❌ PROBLEMA: Llamada directa al repositorio
+            // ❌ PROBLEM: Direct repository call
             Map<String, Object> user = userRepository.findById(id);
             
             if (user == null) {
                 return null;
             }
 
-            // ❌ PROBLEMA: Transformación manual de respuesta
+            // ❌ PROBLEM: Manual response transformation
             Map<String, Object> response = new HashMap<>();
             response.put("id", user.get("id"));
             response.put("email", user.get("email"));
@@ -198,7 +198,7 @@ public class UserService {
     }
 
     /**
-     * ❌ PROBLEMA: Método con lógica de paginación manual
+     * ❌ PROBLEM: Method with manual pagination logic
      */
     public List<Map<String, Object>> getAllUsers(Map<String, Object> filters) {
         try {
@@ -207,7 +207,7 @@ public class UserService {
             String status = (String) filters.get("status");
             String search = (String) filters.get("search");
 
-            // ❌ PROBLEMA: Construcción manual de filtros
+            // ❌ PROBLEM: Manual filter construction
             Map<String, Object> queryFilters = new HashMap<>();
             if (status != null && !status.isEmpty()) {
                 queryFilters.put("status", status);
@@ -216,10 +216,10 @@ public class UserService {
                 queryFilters.put("search", search);
             }
 
-            // ❌ PROBLEMA: Llamada directa al repositorio
+            // ❌ PROBLEM: Direct repository call
             List<Map<String, Object>> users = userRepository.findAll(queryFilters, page, size);
 
-            // ❌ PROBLEMA: Transformación manual de respuesta
+            // ❌ PROBLEM: Manual response transformation
             List<Map<String, Object>> response = new ArrayList<>();
             for (Map<String, Object> user : users) {
                 Map<String, Object> userResponse = new HashMap<>();
@@ -240,28 +240,28 @@ public class UserService {
     }
 
     /**
-     * ❌ PROBLEMA: Método con lógica de negocio específica
+     * ❌ PROBLEM: Method with specific business logic
      */
     public boolean deleteUser(String id) {
         try {
-            // ❌ PROBLEMA: Verificación manual de existencia
+            // ❌ PROBLEM: Manual existence verification
             Map<String, Object> existingUser = userRepository.findById(id);
             if (existingUser == null) {
                 return false;
             }
 
-            // ❌ PROBLEMA: Lógica de negocio en el servicio
+            // ❌ PROBLEM: Business logic in service
             String currentStatus = existingUser.get("status").toString();
             if ("DELETED".equals(currentStatus)) {
                 return false;
             }
 
-            // ❌ PROBLEMA: Soft delete manual
+            // ❌ PROBLEM: Manual soft delete
             Map<String, Object> userToDelete = new HashMap<>(existingUser);
             userToDelete.put("status", "DELETED");
             userToDelete.put("updated_at", LocalDateTime.now());
 
-            // ❌ PROBLEMA: Llamada directa al repositorio
+            // ❌ PROBLEM: Direct repository call
             userRepository.save(userToDelete);
 
             return true;
@@ -272,31 +272,31 @@ public class UserService {
     }
 
     /**
-     * ❌ PROBLEMA: Método con lógica de negocio específica
+     * ❌ PROBLEM: Method with specific business logic
      */
     public Map<String, Object> activateUser(String id) {
         try {
-            // ❌ PROBLEMA: Verificación manual de existencia
+            // ❌ PROBLEM: Manual existence verification
             Map<String, Object> existingUser = userRepository.findById(id);
             if (existingUser == null) {
                 return null;
             }
 
-            // ❌ PROBLEMA: Lógica de negocio en el servicio
+            // ❌ PROBLEM: Business logic in service
             String currentStatus = existingUser.get("status").toString();
             if ("ACTIVE".equals(currentStatus)) {
                 throw new RuntimeException("User is already active");
             }
 
-            // ❌ PROBLEMA: Construcción manual de datos
+            // ❌ PROBLEM: Manual data construction
             Map<String, Object> userToActivate = new HashMap<>(existingUser);
             userToActivate.put("status", "ACTIVE");
             userToActivate.put("updated_at", LocalDateTime.now());
 
-            // ❌ PROBLEMA: Llamada directa al repositorio
+            // ❌ PROBLEM: Direct repository call
             Map<String, Object> activatedUser = userRepository.save(userToActivate);
 
-            // ❌ PROBLEMA: Transformación manual de respuesta
+            // ❌ PROBLEM: Manual response transformation
             Map<String, Object> response = new HashMap<>();
             response.put("id", activatedUser.get("id"));
             response.put("email", activatedUser.get("email"));
@@ -313,31 +313,31 @@ public class UserService {
     }
 
     /**
-     * ❌ PROBLEMA: Método con lógica de negocio específica
+     * ❌ PROBLEM: Method with specific business logic
      */
     public Map<String, Object> deactivateUser(String id) {
         try {
-            // ❌ PROBLEMA: Verificación manual de existencia
+            // ❌ PROBLEM: Manual existence verification
             Map<String, Object> existingUser = userRepository.findById(id);
             if (existingUser == null) {
                 return null;
             }
 
-            // ❌ PROBLEMA: Lógica de negocio en el servicio
+            // ❌ PROBLEM: Business logic in service
             String currentStatus = existingUser.get("status").toString();
             if ("INACTIVE".equals(currentStatus)) {
                 throw new RuntimeException("User is already inactive");
             }
 
-            // ❌ PROBLEMA: Construcción manual de datos
+            // ❌ PROBLEM: Manual data construction
             Map<String, Object> userToDeactivate = new HashMap<>(existingUser);
             userToDeactivate.put("status", "INACTIVE");
             userToDeactivate.put("updated_at", LocalDateTime.now());
 
-            // ❌ PROBLEMA: Llamada directa al repositorio
+            // ❌ PROBLEM: Direct repository call
             Map<String, Object> deactivatedUser = userRepository.save(userToDeactivate);
 
-            // ❌ PROBLEMA: Transformación manual de respuesta
+            // ❌ PROBLEM: Manual response transformation
             Map<String, Object> response = new HashMap<>();
             response.put("id", deactivatedUser.get("id"));
             response.put("email", deactivatedUser.get("email"));
