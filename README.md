@@ -1,4 +1,4 @@
-# 🚀 Spring Boot Refactoring & Debugging - 30 Days Challenge
+# 🚀 Spring Boot Refactoring & Debugging 
 
 > **30 days of practical refactoring and debugging exercises in Spring Boot to demonstrate senior development skills**
 
